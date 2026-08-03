@@ -2,12 +2,9 @@
 
 Console.WriteLine("Hello, Health Clinic+");
 
-Patient patient1 = new Patient();
+var patient1 = new Patient("jose" , 22 , "nada");
 
-patient1.Id = 1;
-patient1.Name = "samuel";
-patient1.Age = 23;
-patient1.Symptom = "none";
+
 
 bool mainmenu = true;
 
@@ -19,7 +16,7 @@ while (mainmenu)
     Console.WriteLine("4. Exit");
     Console.Write(" Choose an option :");
 
-    string option  = Console.ReadLine();
+    string? option  = Console.ReadLine();
 
     switch (option)
     {
