@@ -1,6 +1,6 @@
 ﻿namespace ClinicHealth.Models;
 
-public class Patient
+public  class Patient
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
@@ -9,10 +9,12 @@ public class Patient
 
     public Patient( string name, byte age, string symptom )
     {
-        Id = new Guid();
+        Id = Guid.NewGuid();
         Name = name.Trim().ToUpper();
         Age = age;
         Symptom = symptom.Trim().ToUpper();
     }
+    
+    
     
 }
