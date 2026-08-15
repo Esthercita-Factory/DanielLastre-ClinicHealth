@@ -1,4 +1,7 @@
 ﻿using ClinicHealth.Models;
+using ClinicHealth.UI;
 
-Console.WriteLine("Hello, Health Clinic+");
+var manager = new ManagerClinic();
+manager.ShowMainMenu();
+
 

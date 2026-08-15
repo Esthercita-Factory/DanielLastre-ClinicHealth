@@ -2,7 +2,7 @@ using ClinicHealth.Models;
 
 namespace ClinicHealth.Repositories;
 
-public  class ClinicRepository
+public class ClinicRepository
 {
     public List<Patient> Patients { get; set; }
 
@@ -17,21 +17,7 @@ public  class ClinicRepository
     }
 
 
-    
-    
-
-    public void RegisterPatient(Patient patient)
-    {
-        Patients.Add(patient);
-    }
-    
-    public void ListPatient(Patient patient)
-    {
-        Patients.Add(patient);
-    }
-    public void SearchPatientByName(Patient patient)
-    {
-        Patients.Add(patient);
-    }
-
 }
+    
+
+    
