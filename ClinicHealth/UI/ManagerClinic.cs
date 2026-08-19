@@ -1,7 +1,24 @@
+using ClinicHealth.Models;
+
 namespace ClinicHealth.UI;
 
 public class ManagerClinic
 {
+    public ManagerClinic()
+    {
+        
+    }
+    
+    private PatientService _patientService;
+    private List<Patient> _listPatients;
+    public ManagerClinic(PatientService patientService , List<Patient> listPatients)  
+    {
+        _patientService = patientService; 
+        _listPatients = listPatients;
+    }
+
+
+
     public void ShowMainMenu()
     {
         bool mainMenu = true;
@@ -16,23 +33,26 @@ public class ManagerClinic
             Console.WriteLine("4. Exit");
             Console.Write("Choose an option: ");
             
-            string option = Console.ReadLine();
+            string? option = Console.ReadLine();
 
             switch (option)
             {
                 case "1":
                 {
-                    Console.WriteLine("Register Patien");
+                    _patientService.RegisterPatient(_listPatients);
                     break;
                 }
                 case "2":
                 {
-                    Console.WriteLine("List Patien");
+                    _patientService.ListPatient(_listPatients);
+                   
                     break;
                 }
                 case "3":
                 {
-                    Console.WriteLine("Search Patien");
+                    Console.Write("Enter patient name to search: ");
+                    string? name = Console.ReadLine();
+                    _patientService.SearchPatientByName(_listPatients, name);
                     break;
                 }
           
@@ -51,6 +71,7 @@ public class ManagerClinic
                 Console.WriteLine("\nPress any key to continue...");
                 Console.ReadKey();
             }
+            
         }
     }
 }

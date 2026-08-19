@@ -10,14 +10,20 @@ public class ClinicRepository
     {
         Patients =
         [
-            new Patient("jair", 19, "asymptomatic"),
-            new Patient("jairo", 25, "asymptomatic")
+            new Patient("jair", 
+                19, 
+                "asymptomatic"),
+            new Patient("jairo",
+                25, 
+                "asymptomatic")
 
         ];
     }
 
 
 }
+
+
     
 
     
