@@ -5,14 +5,12 @@ public  class Patient
     public Guid Id { get; set; }
     public string Name { get; set; }
     public byte Age { get; set; }
-    public string Symptom { get; set; }
 
-    public Patient( string name, byte age, string symptom )
+    public Patient( string name, byte age )
     {
         Id = Guid.NewGuid();
-        Name = name.Trim().ToUpper();
+        Name = name?.Trim().ToLower() ?? "";
         Age = age;
-        Symptom = symptom.Trim().ToUpper();
     }
     
     

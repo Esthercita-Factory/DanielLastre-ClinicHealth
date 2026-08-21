@@ -1,4 +1,5 @@
 using ClinicHealth.Models;
+using ClinicHealth.Services;
 
 namespace ClinicHealth.UI;
 
@@ -27,7 +28,7 @@ public class ManagerClinic
         {
             
             Console.WriteLine("=== HEALTH MAIN MENU ===");
-            Console.WriteLine("1. Register Patien");
+            Console.WriteLine("1. Register Patient");
             Console.WriteLine("2. List Patien");
             Console.WriteLine("3. Search Patien");
             Console.WriteLine("4. Exit");

@@ -6,5 +6,5 @@ public interface IPatientService
 {
     void RegisterPatient(List<Patient> listPatients);
     void ListPatient(List<Patient> listPatients);
-    void SearchPatientByName(List<Patient> listPatients , string Name);
+    void SearchPatientByName(List<Patient> listPatients, string name);
 }
