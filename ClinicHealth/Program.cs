@@ -7,7 +7,9 @@ using ClinicHealth.UI;
 
 
 var repository = new ClinicRepository();
-var service = new PatientService();
+var patientService = new PatientService();
+var petService = new PetService();
+var linqService = new LinqService();
 
-var manager = new ManagerClinic(service, repository.Patients);
+var manager = new ManagerClinic(patientService, petService, linqService, repository.Patients, repository.Pets, repository.PatientDictionary);
 manager.ShowMainMenu();

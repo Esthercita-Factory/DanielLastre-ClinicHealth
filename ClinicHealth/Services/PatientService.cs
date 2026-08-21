@@ -11,21 +11,21 @@ public class PatientService: IPatientService
     {
         Console.Write("Enter patient name: ");
         string? name = Console.ReadLine();
-        
+
         while (string.IsNullOrWhiteSpace(name))
         {
             Console.WriteLine("Name cannot be empty.");
             Console.Write("Enter patient name: ");
             name = Console.ReadLine();
         }
-        
+
         byte age = 0;
         bool validAge = false;
         while (!validAge)
         {
             Console.Write("Enter patient age: ");
             string? input = Console.ReadLine();
-            
+
             try
             {
                 age = byte.Parse(input ?? "");
@@ -41,11 +41,13 @@ public class PatientService: IPatientService
             }
         }
 
-        var patient = new Patient(name!, age);
-        
+        Console.Write("Enter patient phone: ");
+        string? phone = Console.ReadLine();
+
+        var patient = new Patient(name!, age, phone);
+
         listPatients.Add(patient);
-        
-     
+
     }
 
     public void ListPatient(List<Patient> listPatients)
@@ -105,6 +107,76 @@ public class PatientService: IPatientService
         catch (Exception e)
         {
             Console.WriteLine($"Error deleting patient: {e.Message}");
+        }
+    }
+
+    public void UpdatePatient(List<Patient> listPatients, Dictionary<Guid, Patient> patientDictionary, Guid patientId)
+    {
+        try
+        {
+            Patient? patientToUpdate = null;
+
+            foreach (var patient in listPatients)
+            {
+                if (patient.Id == patientId)
+                {
+                    patientToUpdate = patient;
+                    break;
+                }
+            }
+
+            if (patientToUpdate != null)
+            {
+                Console.Write("Enter new patient name: ");
+                string? name = Console.ReadLine();
+
+                while (string.IsNullOrWhiteSpace(name))
+                {
+                    Console.WriteLine("Name cannot be empty.");
+                    Console.Write("Enter new patient name: ");
+                    name = Console.ReadLine();
+                }
+
+                byte age = 0;
+                bool validAge = false;
+                while (!validAge)
+                {
+                    Console.Write("Enter new patient age: ");
+                    string? input = Console.ReadLine();
+
+                    try
+                    {
+                        age = byte.Parse(input ?? "");
+                        validAge = true;
+                    }
+                    catch (FormatException e)
+                    {
+                        Console.WriteLine($"Error: Please enter a valid number.{e.Message}");
+                    }
+                    catch (OverflowException e)
+                    {
+                        Console.WriteLine($"Error: Age must be between 0 and 255.{e.Message}");
+                    }
+                }
+
+                Console.Write("Enter new patient phone: ");
+                string? phone = Console.ReadLine();
+
+                patientToUpdate.Name = name!.Trim().ToLower();
+                patientToUpdate.Age = age;
+                patientToUpdate.Phone = phone?.Trim() ?? "";
+
+                patientDictionary[patientId] = patientToUpdate;
+                Console.WriteLine("Patient updated successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Patient not found.");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error updating patient: {e.Message}");
         }
     }
 }
