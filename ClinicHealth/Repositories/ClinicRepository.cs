@@ -13,8 +13,8 @@ public class ClinicRepository
     {
         Patients =
         [
-            new Patient("jair", 19, "555-1234"),
-            new Patient("jairo", 25, "555-5678")
+            new Patient("jair", 19, "cr 123" ,"555-1234"),
+            new Patient("jairo", 30 ,"cr 456" ,"555-4567" )
 
         ];
         Pets = new List<Pet>();

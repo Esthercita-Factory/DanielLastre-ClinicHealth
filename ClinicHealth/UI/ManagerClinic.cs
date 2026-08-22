@@ -62,7 +62,7 @@ public class ManagerClinic
             Console.WriteLine("20. Count Patients (Count)");
             Console.WriteLine("21. Count Pets by Type (Count)");
             Console.WriteLine("22. Combined Query - Dog Owners Ordered by Age (Where + OrderBy + Select)");
-            Console.WriteLine("=== TASK 5 - PRACTICAL PROBLEMS ===");
+            Console.WriteLine("=== PRACTICAL PROBLEMS ===");
             Console.WriteLine("23. Find Youngest Patient (OrderBy + First)");
             Console.WriteLine("24. Find Oldest Patient (OrderByDescending + First)");
             Console.WriteLine("25. Count Pets by Each Type (GroupBy + Select)");
@@ -141,7 +141,7 @@ public class ManagerClinic
                     Console.WriteLine("=== PETS LIST ===");
                     foreach (var pet in _listPets)
                     {
-                        Console.WriteLine($"Id: {pet.Id}, Name: {pet.Name}, Type: {pet.Type}, Symptom: {pet.Symptom}, PatientId: {pet.PatientId}");
+                        Console.WriteLine($"Id: {pet.Id}, Name: {pet.Name}, Type: {pet.Species}, Symptom: {pet.Symptom}, PatientId: {pet.PatientId}");
                     }
                     break;
                 }

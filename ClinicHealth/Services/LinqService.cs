@@ -25,11 +25,11 @@ public class LinqService : ILinqService
     {
         Console.WriteLine($"=== PETS OF TYPE: {type} ===");
 
-        var filteredPets = pets.Where(p => p.Type == type);
+        var filteredPets = pets.Where(p => p.Species == type);
 
         foreach (var pet in filteredPets)
         {
-            Console.WriteLine($"Id: {pet.Id}, Name: {pet.Name}, Type: {pet.Type}, Symptom: {pet.Symptom}");
+            Console.WriteLine($"Id: {pet.Id}, Name: {pet.Name}, Type: {pet.Species}, Symptom: {pet.Symptom}");
         }
 
         Console.WriteLine($"Total pets found: {filteredPets.Count()}");
@@ -83,7 +83,7 @@ public class LinqService : ILinqService
         
         var groupedData = patients
             .Join(pets, patient => patient.Id, pet => pet.PatientId, (patient, pet) => new { Patient = patient, Pet = pet })
-            .GroupBy(x => x.Pet.Type);
+            .GroupBy(x => x.Pet.Species);
         
         foreach (var group in groupedData)
         {
@@ -177,7 +177,7 @@ public class LinqService : ILinqService
     {
         Console.WriteLine($"=== COUNTING PETS OF TYPE: {type} ===");
 
-        int count = pets.Count(p => p.Type == type);
+        int count = pets.Count(p => p.Species == type);
 
         Console.WriteLine($"Total {type} pets: {count}");
     }
@@ -192,7 +192,7 @@ public class LinqService : ILinqService
                   patient => patient.Id,
                   pet => pet.PatientId,
                   (patient, pet) => new { Patient = patient, Pet = pet })
-            .Where(x => x.Pet.Type == PetType.Dog)
+            .Where(x => x.Pet.Species == PetType.Dog)
             .OrderBy(x => x.Patient.Age)
             .Select(x => new {
                 Name = x.Patient.Name,
@@ -245,7 +245,7 @@ public class LinqService : ILinqService
     {
         Console.WriteLine("=== PETS COUNT BY TYPE ===");
 
-        var petCounts = pets.GroupBy(p => p.Type)
+        var petCounts = pets.GroupBy(p => p.Species)
                            .Select(g => new { Type = g.Key, Count = g.Count() });
 
         foreach (var item in petCounts)
@@ -261,7 +261,7 @@ public class LinqService : ILinqService
 
         var hasUndefinedPet = patients
             .Join(pets, patient => patient.Id, pet => pet.PatientId, (patient, pet) => new { Patient = patient, Pet = pet })
-            .Any(x => x.Pet.Type == PetType.Other);
+            .Any(x => x.Pet.Species == PetType.Other);
 
         if (hasUndefinedPet)
         {
@@ -269,7 +269,7 @@ public class LinqService : ILinqService
 
             var patientsWithUndefined = patients
                 .Join(pets, patient => patient.Id, pet => pet.PatientId, (patient, pet) => new { Patient = patient, Pet = pet })
-                .Where(x => x.Pet.Type == PetType.Other);
+                .Where(x => x.Pet.Species == PetType.Other);
 
             Console.WriteLine("Patients with undefined pet type:");
             foreach (var item in patientsWithUndefined)

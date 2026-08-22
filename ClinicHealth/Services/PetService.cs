@@ -54,7 +54,7 @@ public class PetService : IPetService
                 symptom = Console.ReadLine();
             }
 
-            var pet = new Pet(name!, type, symptom!, patientId);
+            var pet = new Pet(name, age, species, symptom, patientId, race);
             listPets.Add(pet);
             Console.WriteLine("Pet registered successfully.");
         }
@@ -152,7 +152,7 @@ public class PetService : IPetService
                 }
 
                 petToUpdate.Name = name!.Trim().ToLower();
-                petToUpdate.Type = type;
+                petToUpdate.Species = type;
                 petToUpdate.Symptom = symptom!.Trim().ToLower();
 
                 Console.WriteLine("Pet updated successfully.");
