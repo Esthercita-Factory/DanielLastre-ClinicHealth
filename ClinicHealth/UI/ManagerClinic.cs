@@ -48,28 +48,30 @@ public class ManagerClinic
             Console.WriteLine("7. List Pets");
             Console.WriteLine("8. Delete Pet");
             Console.WriteLine("9. Update Pet");
+            Console.WriteLine("10. Show Patient's Pets");
+            Console.WriteLine("11. Test Polymorphism (Animal Sounds)");
             Console.WriteLine("=== LINQ QUERIES ===");
-            Console.WriteLine("10. Filter Patients by Age (Where)");
-            Console.WriteLine("11. Filter Pets by Type (Where)");
-            Console.WriteLine("12. Get Patient Names (Select)");
-            Console.WriteLine("13. Order Patients by Name (OrderBy)");
-            Console.WriteLine("14. Order Patients by Age Descending (OrderByDescending)");
-            Console.WriteLine("15. Group Patients by Pet Type (GroupBy)");
-            Console.WriteLine("16. Get First Patient (First)");
-            Console.WriteLine("17. Get First Patient or Default (FirstOrDefault)");
-            Console.WriteLine("18. Check Any Patient with Age (Any)");
-            Console.WriteLine("19. Check All Patients with Age (All)");
-            Console.WriteLine("20. Count Patients (Count)");
-            Console.WriteLine("21. Count Pets by Type (Count)");
-            Console.WriteLine("22. Combined Query - Dog Owners Ordered by Age (Where + OrderBy + Select)");
+            Console.WriteLine("12. Filter Patients by Age (Where)");
+            Console.WriteLine("13. Filter Pets by Type (Where)");
+            Console.WriteLine("14. Get Patient Names (Select)");
+            Console.WriteLine("15. Order Patients by Name (OrderBy)");
+            Console.WriteLine("16. Order Patients by Age Descending (OrderByDescending)");
+            Console.WriteLine("17. Group Patients by Pet Type (GroupBy)");
+            Console.WriteLine("18. Get First Patient (First)");
+            Console.WriteLine("19. Get First Patient or Default (FirstOrDefault)");
+            Console.WriteLine("20. Check Any Patient with Age (Any)");
+            Console.WriteLine("21. Check All Patients with Age (All)");
+            Console.WriteLine("22. Count Patients (Count)");
+            Console.WriteLine("23. Count Pets by Type (Count)");
+            Console.WriteLine("24. Combined Query - Dog Owners Ordered by Age (Where + OrderBy + Select)");
             Console.WriteLine("=== PRACTICAL PROBLEMS ===");
-            Console.WriteLine("23. Find Youngest Patient (OrderBy + First)");
-            Console.WriteLine("24. Find Oldest Patient (OrderByDescending + First)");
-            Console.WriteLine("25. Count Pets by Each Type (GroupBy + Select)");
-            Console.WriteLine("26. Check Patient with Undefined Pet Type (Join + Any)");
-            Console.WriteLine("27. Get Patient Names in Uppercase Ordered (OrderBy + Select + ToUpper)");
+            Console.WriteLine("25. Find Youngest Patient (OrderBy + First)");
+            Console.WriteLine("26. Find Oldest Patient (OrderByDescending + First)");
+            Console.WriteLine("27. Count Pets by Each Type (GroupBy + Select)");
+            Console.WriteLine("28. Check Patient with Undefined Pet Type (Join + Any)");
+            Console.WriteLine("29. Get Patient Names in Uppercase Ordered (OrderBy + Select + ToUpper)");
             Console.WriteLine("=== EXIT ===");
-            Console.WriteLine("28. Exit");
+            Console.WriteLine("30. Exit");
             Console.Write("Choose an option: ");
 
             string? option = Console.ReadLine();
@@ -151,7 +153,7 @@ public class ManagerClinic
                     string? idInput = Console.ReadLine();
                     if (Guid.TryParse(idInput, out Guid petId))
                     {
-                        _petService.DeletePet(_listPets, petId);
+                        _petService.DeletePet(_listPets, _patientDictionary, petId);
                     }
                     else
                     {
@@ -165,7 +167,7 @@ public class ManagerClinic
                     string? idInput = Console.ReadLine();
                     if (Guid.TryParse(idInput, out Guid petId))
                     {
-                        _petService.UpdatePet(_listPets, petId);
+                        _petService.UpdatePet(_listPets, _patientDictionary, petId);
                     }
                     else
                     {
@@ -174,6 +176,32 @@ public class ManagerClinic
                     break;
                 }
                 case "10":
+                {
+                    Console.Write("Enter patient ID to show pets: ");
+                    string? idInput = Console.ReadLine();
+                    if (Guid.TryParse(idInput, out Guid patientId))
+                    {
+                        if (_patientDictionary.ContainsKey(patientId))
+                        {
+                            _patientDictionary[patientId].ShowPets();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Patient not found.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid ID format.");
+                    }
+                    break;
+                }
+                case "11":
+                {
+                    _petService.TestPolymorphism(_listPets);
+                    break;
+                }
+                case "12":
                 {
                     Console.Write("Enter minimum age: ");
                     string? minAgeInput = Console.ReadLine();
@@ -189,7 +217,7 @@ public class ManagerClinic
                     }
                     break;
                 }
-                case "11":
+                case "13":
                 {
                     Console.WriteLine("Available pet types:");
                     Console.WriteLine("0 - Dog");
@@ -211,37 +239,37 @@ public class ManagerClinic
                     }
                     break;
                 }
-                case "12":
+                case "14":
                 {
                     _linqService.GetPatientNames(_listPatients);
                     break;
                 }
-                case "13":
+                case "15":
                 {
                     _linqService.OrderPatientsByName(_listPatients);
                     break;
                 }
-                case "14":
+                case "16":
                 {
                     _linqService.OrderPatientsByAgeDescending(_listPatients);
                     break;
                 }
-                case "15":
+                case "17":
                 {
                     _linqService.GroupPatientsByPetType(_listPatients, _listPets);
                     break;
                 }
-                case "16":
+                case "18":
                 {
                     _linqService.GetFirstPatient(_listPatients);
                     break;
                 }
-                case "17":
+                case "19":
                 {
                     _linqService.GetFirstPatientOrDefault(_listPatients);
                     break;
                 }
-                case "18":
+                case "20":
                 {
                     Console.Write("Enter age to check: ");
                     string? ageInput = Console.ReadLine();
@@ -255,7 +283,7 @@ public class ManagerClinic
                     }
                     break;
                 }
-                case "19":
+                case "21":
                 {
                     Console.Write("Enter maximum age to check: ");
                     string? maxAgeInput = Console.ReadLine();
@@ -269,12 +297,12 @@ public class ManagerClinic
                     }
                     break;
                 }
-                case "20":
+                case "22":
                 {
                     _linqService.CountPatients(_listPatients);
                     break;
                 }
-                case "21":
+                case "23":
                 {
                     Console.WriteLine("Available pet types:");
                     Console.WriteLine("0 - Dog");
@@ -296,37 +324,37 @@ public class ManagerClinic
                     }
                     break;
                 }
-                case "22":
+                case "24":
                 {
                     _linqService.GetDogOwnersOrderedByAge(_listPatients, _listPets);
                     break;
                 }
-                case "23":
+                case "25":
                 {
                     _linqService.FindYoungestPatient(_listPatients);
                     break;
                 }
-                case "24":
+                case "26":
                 {
                     _linqService.FindOldestPatient(_listPatients);
                     break;
                 }
-                case "25":
+                case "27":
                 {
                     _linqService.CountPetsByEachType(_listPets);
                     break;
                 }
-                case "26":
+                case "28":
                 {
                     _linqService.CheckPatientWithUndefinedPetType(_listPatients, _listPets);
                     break;
                 }
-                case "27":
+                case "29":
                 {
                     _linqService.GetPatientNamesUppercaseOrdered(_listPatients);
                     break;
                 }
-                case "28":
+                case "30":
                     Console.WriteLine("Exiting... Goodbye!");
                     mainMenu = false;
                     break;

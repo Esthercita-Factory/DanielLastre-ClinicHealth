@@ -1,104 +1,160 @@
-# Resumen para Continuar - ClinicHealth
+# Progress Summary - ClinicHealth
 
-**Proyecto:** ClinicHealth (Clínica de Mascotas)  
-**Ubicación:** DanielLastre-ClinicHealth  
-**Plazo:** Hasta el domingo para completar 5 semanas
+**Project:** ClinicHealth (Pet Clinic)  
+**Location:** DanielLastre-ClinicHealth  
+**Deadline:** Sunday to complete 5 weeks
 
 ---
 
-## Estado Actual
+## Current Status
 
-### Semana 1: ✅ COMPLETADA
-- Task 1-7: Entorno, proyecto, clases, menú, servicios, colecciones, manejo de errores
+### Week 1: ✅ COMPLETED
+- Task 1-7: Environment, project, classes, menu, services, collections, error handling
 
-### Semana 2 - Task 1: ✅ COMPLETADA
-**Objetivo:** Reforzar colecciones (List y Dictionary)
+### Week 2 - Task 1: ✅ COMPLETED
+**Objective:** Reinforce collections (List and Dictionary)
 
-#### Completado:
+#### Completed:
 - ✅ List Patients
 - ✅ List Pets
 - ✅ Dictionary<Guid, Patient> PatientDictionary
-- ✅ DeletePatient (con try-catch)
-- ✅ UpdatePatient (modificar paciente)
-- ✅ RegisterPet (agregar mascota)
-- ✅ DeletePet (eliminar mascota)
-- ✅ UpdatePet (modificar mascota)
+- ✅ DeletePatient (with try-catch)
+- ✅ UpdatePatient (modify patient)
+- ✅ RegisterPet (add pet)
+- ✅ DeletePet (delete pet)
+- ✅ UpdatePet (modify pet)
+- ✅ Patient.Pets List (relationship Patient-Pet)
+- ✅ ShowPets() method in Patient
 
-#### Arquitectura:
-- ✅ PatientService.cs (solo métodos de Patient)
-- ✅ PetService.cs (solo métodos de Pet)
-- ✅ IPatientService.cs (interfaz de Patient)
-- ✅ IPetService.cs (interfaz de Pet)
+#### Architecture:
+- ✅ PatientService.cs (only Patient methods)
+- ✅ PetService.cs (only Pet methods)
+- ✅ IPatientService.cs (Patient interface)
+- ✅ IPetService.cs (Pet interface)
 
-### Semana 2 - Task 2: ✅ COMPLETADA
-**Objetivo:** Practicar LINQ (sintaxis de métodos)
+### Week 2 - Task 2: ✅ COMPLETED
+**Objective:** Practice LINQ (method syntax)
 
-#### Completado:
-- ✅ Where - Filtrar pacientes por edad
-- ✅ Where - Filtrar mascotas por especie
-- ✅ Select - Proyectar nombres de pacientes
-- ✅ OrderBy - Ordenar pacientes por nombre
-- ✅ OrderByDescending - Ordenar pacientes por edad descendente
-- ✅ GroupBy - Agrupar pacientes por especie de mascota
-- ✅ First - Obtener primer paciente
-- ✅ FirstOrDefault - Obtener primer paciente o default
-- ✅ Any - Verificar si algún paciente cumple condición
-- ✅ All - Verificar si todos los pacientes cumplen condición
-- ✅ Count - Contar pacientes
-- ✅ Count - Contar mascotas por tipo
+#### Completed:
+- ✅ Where - Filter patients by age
+- ✅ Where - Filter pets by species
+- ✅ Select - Project patient names
+- ✅ OrderBy - Order patients by name
+- ✅ OrderByDescending - Order patients by age descending
+- ✅ GroupBy - Group patients by pet species
+- ✅ First - Get first patient
+- ✅ FirstOrDefault - Get first patient or default
+- ✅ Any - Check if any patient meets condition
+- ✅ All - Check if all patients meet condition
+- ✅ Count - Count patients
+- ✅ Count - Count pets by type
+- ✅ Combined queries (Where + OrderBy + Select)
+- ✅ Practical problems (youngest/oldest, count by type, etc.)
 
-#### Arquitectura:
-- ✅ LinqService.cs (servicio de consultas LINQ)
-- ✅ ILinqService.cs (interfaz de LINQ)
-- ✅ Integrado en menú (opciones 10-21)
+#### Architecture:
+- ✅ LinqService.cs (LINQ query service)
+- ✅ ILinqService.cs (LINQ interface)
+- ✅ Integrated in menu (options 12-29)
+
+### Week 2 - Task 3: ✅ COMPLETED
+**Objective:** OOP Concepts - Encapsulation, Inheritance, Polymorphism, Abstraction
+
+#### Completed:
+- ✅ TASK 4 - Encapsulation
+  - Patient: Private fields (_id, _name, _age, _address, _phone, _pets) with public properties
+  - Animal: Private fields (_id, _name, _age, _species) with public properties
+  - Pet: Private fields (_patientId, _race, _symptom, _owner) with public properties
+  - Validation in property setters (Trim, ToLower)
+  - Protected sensitive data (phone)
+
+- ✅ TASK 5 - Inheritance and Polymorphism
+  - Animal base class with Id, Name, Age, Species
+  - Pet inherits from Animal
+  - Pet adds Race, Symptom, PatientId, Owner attributes
+  - Animal.MakeSound() virtual method
+  - Pet.MakeSound() override with switch by species (Dog, Cat, Bird, Hamster, Rabbit, Other)
+  - TestPolymorphism() method in PetService
+  - Menu option 11: Test Polymorphism (Animal Sounds)
+
+- ✅ TASK 6 - Abstraction
+  - IRegistrable interface with Register() method
+  - Patient implements IRegistrable
+  - Pet implements IRegistrable
+  - VeterinaryService abstract class with protected fields
+  - VeterinaryService.Attend() abstract method
+  - VeterinaryService.ShowInformation() virtual method
+  - GeneralConsultation inherits from VeterinaryService
+  - Vaccination inherits from VeterinaryService
+  - Both override Attend() and ShowInformation()
+
+#### Architecture:
+- ✅ IRegistrable.cs (registration interface)
+- ✅ VeterinaryService.cs (abstract base class)
+- ✅ GeneralConsultation.cs (concrete subclass)
+- ✅ Vaccination.cs (concrete subclass)
+- ✅ Patient.cs implements IRegistrable
+- ✅ Pet.cs implements IRegistrable
 
 ---
 
-## Estructura del Proyecto
+## Project Structure
 
 ```
 ClinicHealth/
 ├── Models/
-│   ├── Patient.cs (Id, Name, Age)
-│   └── Pet.cs (Id, Name, Type, Symptom, PatientId)
+│   ├── Patient.cs (Id, Name, Age, Address, Phone, List<Pet>)
+│   ├── Animal.cs (Id, Name, Age, Species) - Base class
+│   ├── Pet.cs (Id, Name, Age, Species, Race, Symptom, PatientId, Owner) - Inherits Animal
+│   ├── Race.cs (Enum with 24 breeds)
+│   ├── VeterinaryService.cs (Abstract class)
+│   ├── GeneralConsultation.cs (Inherits VeterinaryService)
+│   └── Vaccination.cs (Inherits VeterinaryService)
 ├── Services/
 │   ├── PatientService.cs (Register, List, Search, Delete, Update)
-│   ├── PetService.cs (Register, Delete, Update)
+│   ├── PetService.cs (Register, Delete, Update, TestPolymorphism)
 │   └── LinqService.cs (Where, Select, OrderBy, GroupBy, First, Any, All, Count)
 ├── Interfaces/
-│   ├── IPatientService.cs (interfaz de Patient)
-│   ├── IPetService.cs (interfaz de Pet)
-│   └── ILinqService.cs (interfaz de LINQ)
+│   ├── IPatientService.cs (Patient interface)
+│   ├── IPetService.cs (Pet interface)
+│   ├── ILinqService.cs (LINQ interface)
+│   └── IRegistrable.cs (Registration interface)
 ├── Repositories/
 │   └── ClinicRepository.cs (Patients, Pets, PatientDictionary)
 └── UI/
-    └── ManagerClinic.cs (menú con opciones LINQ)
+    └── ManagerClinic.cs (menu with LINQ options and polymorphism test)
 ```
 
-**Conexiones:**
-- `PatientService` implementa `IPatientService`
-- `PetService` implementa `IPetService`
-- `LinqService` implementa `ILinqService`
-- Todos los servicios usan `using ClinicHealth.Interfaces`
+**Connections:**
+- `PatientService` implements `IPatientService`
+- `PetService` implements `IPetService`
+- `LinqService` implements `ILinqService`
+- `Patient` implements `IRegistrable`
+- `Pet` implements `IRegistrable`
+- `Pet` inherits from `Animal`
+- `GeneralConsultation` inherits from `VeterinaryService`
+- `Vaccination` inherits from `VeterinaryService`
+- All services use `using ClinicHealth.Interfaces`
 
 ---
 
-## Próximos Pasos
+## Next Steps
 
-1. **Continuar con las semanas restantes**
+1. **Continue with remaining weeks**
 
 ---
 
-## Comandos Útiles
+## Useful Commands
 
 ```bash
 cd /home/cohorte5/RiderProjects/DanielLastre-ClinicHealth
+dotnet build
+dotnet run
 git status
 git add .
-git commit -m "mensaje"
+git commit -m "message"
 git push
 ```
 
 ---
 
-**Última actualización:** 21 de agosto de 2026
+**Last updated:** August 24, 2026
