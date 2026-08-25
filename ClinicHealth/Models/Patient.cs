@@ -2,7 +2,7 @@
 
 namespace ClinicHealth.Models;
 
-public class Patient : IRegistrable
+public class Patient : IRegistrable, INotificable
 {
     private Guid _id;
     private string _name;
@@ -93,5 +93,13 @@ public class Patient : IRegistrable
         Console.WriteLine($"Age: {Age}");
         Console.WriteLine($"Address: {Address}");
         Console.WriteLine($"Phone: {Phone}");
+    }
+
+    public void EnviarNotificacion()
+    {
+        Console.WriteLine($"=== ENVIANDO NOTIFICACIÓN ===");
+        Console.WriteLine($"Enviando recordatorio de cita al paciente: {Name}");
+        Console.WriteLine($"Teléfono: {Phone}");
+        Console.WriteLine($"Notificación enviada exitosamente.");
     }
 }

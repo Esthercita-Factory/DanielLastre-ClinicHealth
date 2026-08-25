@@ -8,7 +8,7 @@ public interface IPatientService
     void ListPatient(List<Patient> listPatients);
     void SearchPatientByName(List<Patient> listPatients, string name);
     void DeletePatient(List<Patient> listPatients, Dictionary<Guid, Patient> patientDictionary, Guid patientId);
-    
     void UpdatePatient(List<Patient> listPatients, Dictionary<Guid, Patient> patientDictionary, Guid patientId);
-    
+    void DebugDivisionByZero();
+    void DebugVariableInspection(List<Patient> listPatients);
 }

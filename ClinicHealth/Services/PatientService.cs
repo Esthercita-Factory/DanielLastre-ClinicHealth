@@ -1,3 +1,4 @@
+using ClinicHealth.Exceptions;
 using ClinicHealth.Interfaces;
 using ClinicHealth.Models;
 
@@ -5,7 +6,36 @@ namespace ClinicHealth.Services;
 
 public class PatientService: IPatientService
 {
- 
+    private LoggerService _loggerService;
+
+    public PatientService(LoggerService loggerService)
+    {
+        _loggerService = loggerService;
+    }
+
+    public void DebugDivisionByZero()
+    {
+        int dividend = 100;
+        int divisor = 0;
+        
+        int result = dividend / divisor;
+        
+        Console.WriteLine($"Result: {result}");
+    }
+
+    public void DebugVariableInspection(List<Patient> listPatients)
+    {
+        int patientCount = listPatients.Count;
+        string firstPatientName = "";
+        
+        if (patientCount > 0)
+        {
+            firstPatientName = listPatients[0].Name;
+        }
+        
+        Console.WriteLine($"Total patients: {patientCount}");
+        Console.WriteLine($"First patient: {firstPatientName}");
+    }
 
     public void RegisterPatient(List<Patient> listPatients)
     {
@@ -47,7 +77,9 @@ public class PatientService: IPatientService
         var patient = new Patient(name!, age, phone);
 
         listPatients.Add(patient);
-
+        
+        patient.Register();
+        patient.EnviarNotificacion();
     }
 
     public void ListPatient(List<Patient> listPatients)
@@ -101,11 +133,17 @@ public class PatientService: IPatientService
             }
             else
             {
-                Console.WriteLine("Patient not found.");
+                throw new PatientNotFoundException(patientId);
             }
+        }
+        catch (PatientNotFoundException ex)
+        {
+            _loggerService.LogError(ex, "DeletePatient");
+            Console.WriteLine(ex.Message);
         }
         catch (Exception e)
         {
+            _loggerService.LogError(e, "DeletePatient");
             Console.WriteLine($"Error deleting patient: {e.Message}");
         }
     }
@@ -171,11 +209,17 @@ public class PatientService: IPatientService
             }
             else
             {
-                Console.WriteLine("Patient not found.");
+                throw new PatientNotFoundException(patientId);
             }
+        }
+        catch (PatientNotFoundException ex)
+        {
+            _loggerService.LogError(ex, "UpdatePatient");
+            Console.WriteLine(ex.Message);
         }
         catch (Exception e)
         {
+            _loggerService.LogError(e, "UpdatePatient");
             Console.WriteLine($"Error updating patient: {e.Message}");
         }
     }

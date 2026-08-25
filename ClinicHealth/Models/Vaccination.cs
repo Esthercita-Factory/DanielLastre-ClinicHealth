@@ -1,6 +1,8 @@
+using ClinicHealth.Interfaces;
+
 namespace ClinicHealth.Models;
 
-public class Vaccination : VeterinaryService
+public class Vaccination : VeterinaryService, IAtendible
 {
     private string _vaccineType;
     private DateTime _applicationDate;
@@ -43,6 +45,11 @@ public class Vaccination : VeterinaryService
         Console.WriteLine($"Recording application date: {_applicationDate:dd/MM/yyyy}");
         Console.WriteLine($"Next dose scheduled: {_nextDose:dd/MM/yyyy}");
         Console.WriteLine($"Vaccination completed successfully.");
+    }
+
+    public void Atender()
+    {
+        Attend();
     }
 
     public override void ShowInformation()

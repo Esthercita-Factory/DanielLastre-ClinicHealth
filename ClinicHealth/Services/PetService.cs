@@ -1,3 +1,4 @@
+using ClinicHealth.Exceptions;
 using ClinicHealth.Interfaces;
 using ClinicHealth.Models;
 
@@ -5,14 +6,20 @@ namespace ClinicHealth.Services;
 
 public class PetService : IPetService
 {
+    private LoggerService _loggerService;
+
+    public PetService(LoggerService loggerService)
+    {
+        _loggerService = loggerService;
+    }
+
     public void RegisterPet(List<Pet> listPets, Dictionary<Guid, Patient> patientDictionary, Guid patientId)
     {
         try
         {
             if (!patientDictionary.ContainsKey(patientId))
             {
-                Console.WriteLine("Patient not found. Cannot register pet.");
-                return;
+                throw new PatientNotFoundException(patientId, "Patient not found. Cannot register pet.");
             }
 
             Console.Write("Enter pet name: ");
@@ -105,8 +112,14 @@ public class PetService : IPetService
             patientDictionary[patientId].Pets.Add(pet);
             Console.WriteLine("Pet registered successfully.");
         }
+        catch (PatientNotFoundException ex)
+        {
+            _loggerService.LogError(ex, "RegisterPet");
+            Console.WriteLine(ex.Message);
+        }
         catch (Exception e)
         {
+            _loggerService.LogError(e, "RegisterPet");
             Console.WriteLine($"Error registering pet: {e.Message}");
         }
     }
@@ -134,11 +147,17 @@ public class PetService : IPetService
             }
             else
             {
-                Console.WriteLine("Pet not found.");
+                throw new PetNotFoundException(petId);
             }
+        }
+        catch (PetNotFoundException ex)
+        {
+            _loggerService.LogError(ex, "DeletePet");
+            Console.WriteLine(ex.Message);
         }
         catch (Exception e)
         {
+            _loggerService.LogError(e, "DeletePet");
             Console.WriteLine($"Error deleting pet: {e.Message}");
         }
     }
@@ -255,11 +274,17 @@ public class PetService : IPetService
             }
             else
             {
-                Console.WriteLine("Pet not found.");
+                throw new PetNotFoundException(petId);
             }
+        }
+        catch (PetNotFoundException ex)
+        {
+            _loggerService.LogError(ex, "UpdatePet");
+            Console.WriteLine(ex.Message);
         }
         catch (Exception e)
         {
+            _loggerService.LogError(e, "UpdatePet");
             Console.WriteLine($"Error updating pet: {e.Message}");
         }
     }

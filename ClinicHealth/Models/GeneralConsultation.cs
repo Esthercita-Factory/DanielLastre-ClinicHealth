@@ -1,6 +1,8 @@
+using ClinicHealth.Interfaces;
+
 namespace ClinicHealth.Models;
 
-public class GeneralConsultation : VeterinaryService
+public class GeneralConsultation : VeterinaryService, IAtendible
 {
     private string _diagnosis;
     private string _treatment;
@@ -31,6 +33,11 @@ public class GeneralConsultation : VeterinaryService
         Console.WriteLine($"Performing physical exam on patient...");
         Console.WriteLine($"Evaluating symptoms and behavior...");
         Console.WriteLine($"General consultation completed.");
+    }
+
+    public void Atender()
+    {
+        Attend();
     }
 
     public override void ShowInformation()
