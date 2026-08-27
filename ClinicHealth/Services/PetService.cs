@@ -1,305 +1,162 @@
 using ClinicHealth.Exceptions;
 using ClinicHealth.Interfaces;
 using ClinicHealth.Models;
+using ClinicHealth.Repositories;
 
 namespace ClinicHealth.Services;
 
 public class PetService : IPetService
 {
-    private LoggerService _loggerService;
+    private readonly IPetRepository _petRepository;
+    private readonly IPatientRepository _patientRepository;
+    private readonly LoggerService _loggerService;
 
-    public PetService(LoggerService loggerService)
+    public PetService(IPetRepository petRepository, IPatientRepository patientRepository, LoggerService loggerService)
     {
+        _petRepository = petRepository;
+        _patientRepository = patientRepository;
         _loggerService = loggerService;
     }
 
-    public void RegisterPet(List<Pet> listPets, Dictionary<Guid, Patient> patientDictionary, Guid patientId)
+    public void Register(Guid ownerId, string name, byte age, PetType type, string symptom, Race race)
     {
         try
         {
-            if (!patientDictionary.ContainsKey(patientId))
+            if (!_patientRepository.ExistsId(ownerId))
             {
-                throw new PatientNotFoundException(patientId, "Patient not found. Cannot register pet.");
+                throw new PatientNotFoundException(ownerId, "Patient not found. Cannot register pet.");
             }
 
-            Console.Write("Enter pet name: ");
-            string? name = Console.ReadLine();
-
-            while (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name))
             {
-                Console.WriteLine("Name cannot be empty.");
-                Console.Write("Enter pet name: ");
-                name = Console.ReadLine();
+                throw new ArgumentException("Name cannot be empty.");
             }
 
-            Console.WriteLine("Available pet types:");
-            Console.WriteLine("0 - Dog");
-            Console.WriteLine("1 - Cat");
-            Console.WriteLine("2 - Bird");
-            Console.WriteLine("3 - Hamster");
-            Console.WriteLine("4 - Rabbit");
-            Console.WriteLine("5 - Other");
-            Console.Write("Enter pet type number: ");
-            string? typeInput = Console.ReadLine();
-
-            PetType type;
-            while (!int.TryParse(typeInput, out int typeNumber) || typeNumber < 0 || typeNumber > 5)
+            if (age == 0)
             {
-                Console.WriteLine("Invalid type number. Enter a number between 0 and 5.");
-                Console.Write("Enter pet type number: ");
-                typeInput = Console.ReadLine();
-            }
-            type = (PetType)int.Parse(typeInput!);
-
-            Console.Write("Enter pet symptom: ");
-            string? symptom = Console.ReadLine();
-
-            while (string.IsNullOrWhiteSpace(symptom))
-            {
-                Console.WriteLine("Symptom cannot be empty.");
-                Console.Write("Enter pet symptom: ");
-                symptom = Console.ReadLine();
+                throw new ArgumentException("Age must be greater than 0.");
             }
 
-            Console.Write("Enter pet age: ");
-            string? ageInput = Console.ReadLine();
-            byte age;
-            while (!byte.TryParse(ageInput, out age) || age == 0)
+            var pet = new Pet(name, age, type, symptom, ownerId, race);
+            _petRepository.Register(pet);
+            
+            // Add pet to patient's pet list
+            var patient = _patientRepository.GetById(ownerId);
+            if (patient != null)
             {
-                Console.WriteLine("Invalid age. Enter a valid number greater than 0.");
-                Console.Write("Enter pet age: ");
-                ageInput = Console.ReadLine();
+                patient.Pets.Add(pet);
             }
-
-            Console.WriteLine("Available races:");
-            Console.WriteLine("0 - LabradorRetriever");
-            Console.WriteLine("1 - GermanShepherd");
-            Console.WriteLine("2 - GoldenRetriever");
-            Console.WriteLine("3 - FrenchBulldog");
-            Console.WriteLine("4 - Chihuahua");
-            Console.WriteLine("5 - DomesticShortHair");
-            Console.WriteLine("6 - Persian");
-            Console.WriteLine("7 - RussianBlue");
-            Console.WriteLine("8 - Siamese");
-            Console.WriteLine("9 - MaineCoon");
-            Console.WriteLine("10 - Budgerigar");
-            Console.WriteLine("11 - Canary");
-            Console.WriteLine("12 - Cockatiel");
-            Console.WriteLine("13 - Lovebird");
-            Console.WriteLine("14 - Cockatoo");
-            Console.WriteLine("15 - Syrian");
-            Console.WriteLine("16 - RussianDwarf");
-            Console.WriteLine("17 - Roborovski");
-            Console.WriteLine("18 - CampbellsDwarf");
-            Console.WriteLine("19 - Lionhead");
-            Console.WriteLine("20 - BelierLop");
-            Console.WriteLine("21 - NetherlandDwarf");
-            Console.WriteLine("22 - FlemishGiant");
-            Console.WriteLine("23 - Other");
-            Console.Write("Enter race number: ");
-            string? raceInput = Console.ReadLine();
-            Race race;
-            while (!int.TryParse(raceInput, out int raceNumber) || raceNumber < 0 || raceNumber > 23)
-            {
-                Console.WriteLine("Invalid race number. Enter a number between 0 and 23.");
-                Console.Write("Enter race number: ");
-                raceInput = Console.ReadLine();
-            }
-            race = (Race)int.Parse(raceInput!);
-
-            var pet = new Pet(name, age, type, symptom, patientId, race);
-            listPets.Add(pet);
-            patientDictionary[patientId].Pets.Add(pet);
+            
             Console.WriteLine("Pet registered successfully.");
         }
         catch (PatientNotFoundException ex)
         {
-            _loggerService.LogError(ex, "RegisterPet");
+            _loggerService.LogError(ex, "Register");
             Console.WriteLine(ex.Message);
         }
         catch (Exception e)
         {
-            _loggerService.LogError(e, "RegisterPet");
+            _loggerService.LogError(e, "Register");
             Console.WriteLine($"Error registering pet: {e.Message}");
         }
     }
 
-    public void DeletePet(List<Pet> listPets, Dictionary<Guid, Patient> patientDictionary, Guid petId)
+    public void Delete(Guid id)
     {
         try
         {
-            Pet? petToDelete = null;
-
-            foreach (var pet in listPets)
+            var pet = _petRepository.GetById(id);
+            if (pet == null)
             {
-                if (pet.Id == petId)
-                {
-                    petToDelete = pet;
-                    break;
-                }
+                throw new PetNotFoundException(id);
             }
 
-            if (petToDelete != null)
+            // Remove from patient's pet list
+            var patient = _patientRepository.GetById(pet.PatientId);
+            if (patient != null)
             {
-                listPets.Remove(petToDelete);
-                patientDictionary[petToDelete.PatientId].Pets.Remove(petToDelete);
-                Console.WriteLine("Pet deleted successfully.");
+                patient.Pets.Remove(pet);
             }
-            else
-            {
-                throw new PetNotFoundException(petId);
-            }
+
+            _petRepository.Delete(id);
+            Console.WriteLine("Pet deleted successfully.");
         }
         catch (PetNotFoundException ex)
         {
-            _loggerService.LogError(ex, "DeletePet");
+            _loggerService.LogError(ex, "Delete");
             Console.WriteLine(ex.Message);
         }
         catch (Exception e)
         {
-            _loggerService.LogError(e, "DeletePet");
+            _loggerService.LogError(e, "Delete");
             Console.WriteLine($"Error deleting pet: {e.Message}");
         }
     }
 
-    public void UpdatePet(List<Pet> listPets, Dictionary<Guid, Patient> patientDictionary, Guid petId)
+    public void Update(Guid id, string name, byte age, PetType type, string symptom, Race race)
     {
         try
         {
-            Pet? petToUpdate = null;
+            var pet = _petRepository.GetById(id);
+            if (pet == null)
 
-            foreach (var pet in listPets)
+
+
             {
-                if (pet.Id == petId)
-                {
-                    petToUpdate = pet;
-                    break;
-                }
+                throw new PetNotFoundException(id);
             }
 
-            if (petToUpdate != null)
-            {
-                Console.Write("Enter new pet name: ");
-                string? name = Console.ReadLine();
+            pet.Name = name;
+            pet.Age = age;
+            pet.Species = type;
+            pet.Symptom = symptom;
+            pet.Race = race;
 
-                while (string.IsNullOrWhiteSpace(name))
-                {
-                    Console.WriteLine("Name cannot be empty.");
-                    Console.Write("Enter new pet name: ");
-                    name = Console.ReadLine();
-                }
-
-                Console.WriteLine("Available pet types:");
-                Console.WriteLine("0 - Dog");
-                Console.WriteLine("1 - Cat");
-                Console.WriteLine("2 - Bird");
-                Console.WriteLine("3 - Hamster");
-                Console.WriteLine("4 - Rabbit");
-                Console.WriteLine("5 - Other");
-                Console.Write("Enter new pet type number: ");
-                string? typeInput = Console.ReadLine();
-
-                PetType type;
-                while (!int.TryParse(typeInput, out int typeNumber) || typeNumber < 0 || typeNumber > 5)
-                {
-                    Console.WriteLine("Invalid type number. Enter a number between 0 and 5.");
-                    Console.Write("Enter new pet type number: ");
-                    typeInput = Console.ReadLine();
-                }
-                type = (PetType)int.Parse(typeInput!);
-
-                Console.Write("Enter new pet symptom: ");
-                string? symptom = Console.ReadLine();
-
-                while (string.IsNullOrWhiteSpace(symptom))
-                {
-                    Console.WriteLine("Symptom cannot be empty.");
-                    Console.Write("Enter pet symptom: ");
-                    symptom = Console.ReadLine();
-                }
-
-                Console.Write("Enter new pet age: ");
-                string? ageInput = Console.ReadLine();
-                byte age;
-                while (!byte.TryParse(ageInput, out age) || age == 0)
-                {
-                    Console.WriteLine("Invalid age. Enter a valid number greater than 0.");
-                    Console.Write("Enter new pet age: ");
-                    ageInput = Console.ReadLine();
-                }
-
-                Console.WriteLine("Available races:");
-                Console.WriteLine("0 - LabradorRetriever");
-                Console.WriteLine("1 - GermanShepherd");
-                Console.WriteLine("2 - GoldenRetriever");
-                Console.WriteLine("3 - FrenchBulldog");
-                Console.WriteLine("4 - Chihuahua");
-                Console.WriteLine("5 - DomesticShortHair");
-                Console.WriteLine("6 - Persian");
-                Console.WriteLine("7 - RussianBlue");
-                Console.WriteLine("8 - Siamese");
-                Console.WriteLine("9 - MaineCoon");
-                Console.WriteLine("10 - Budgerigar");
-                Console.WriteLine("11 - Canary");
-                Console.WriteLine("12 - Cockatiel");
-                Console.WriteLine("13 - Lovebird");
-                Console.WriteLine("14 - Cockatoo");
-                Console.WriteLine("15 - Syrian");
-                Console.WriteLine("16 - RussianDwarf");
-                Console.WriteLine("17 - Roborovski");
-                Console.WriteLine("18 - CampbellsDwarf");
-                Console.WriteLine("19 - Lionhead");
-                Console.WriteLine("20 - BelierLop");
-                Console.WriteLine("21 - NetherlandDwarf");
-                Console.WriteLine("22 - FlemishGiant");
-                Console.WriteLine("23 - Other");
-                Console.Write("Enter race number: ");
-                string? raceInput = Console.ReadLine();
-                Race race;
-                while (!int.TryParse(raceInput, out int raceNumber) || raceNumber < 0 || raceNumber > 23)
-                {
-                    Console.WriteLine("Invalid race number. Enter a number between 0 and 23.");
-                    Console.Write("Enter race number: ");
-                    raceInput = Console.ReadLine();
-                }
-                race = (Race)int.Parse(raceInput!);
-
-                petToUpdate.Name = name!.Trim().ToLower();
-                petToUpdate.Species = type;
-                petToUpdate.Symptom = symptom!.Trim().ToLower();
-                petToUpdate.Age = age;
-                petToUpdate.Race = race;
-
-                Console.WriteLine("Pet updated successfully.");
-            }
-            else
-            {
-                throw new PetNotFoundException(petId);
-            }
+            _petRepository.Update(pet);
+            Console.WriteLine("Pet updated successfully.");
         }
         catch (PetNotFoundException ex)
         {
-            _loggerService.LogError(ex, "UpdatePet");
+            _loggerService.LogError(ex, "Update");
             Console.WriteLine(ex.Message);
         }
         catch (Exception e)
         {
-            _loggerService.LogError(e, "UpdatePet");
+            _loggerService.LogError(e, "Update");
             Console.WriteLine($"Error updating pet: {e.Message}");
         }
     }
 
-    public void TestPolymorphism(List<Pet> listPets)
+    public void List()
+    {
+        var pets = _petRepository.GetAll();
+        foreach (var pet in pets)
+        {
+            Console.WriteLine($"Id: {pet.Id}, Name: {pet.Name}, Type: {pet.Species}, Symptom: {pet.Symptom}, PatientId: {pet.PatientId}");
+        }
+    }
+
+    public void ListByOwner(Guid ownerId)
+    {
+        var pets = _petRepository.FilterByOwner(ownerId);
+        foreach (var pet in pets)
+        {
+            Console.WriteLine($"Id: {pet.Id}, Name: {pet.Name}, Type: {pet.Species}, Symptom: {pet.Symptom}");
+        }
+    }
+
+    public void TestPolymorphism()
     {
         Console.WriteLine("=== TESTING POLYMORPHISM - ANIMAL SOUNDS ===");
 
-        if (listPets.Count == 0)
+        var pets = _petRepository.GetAll();
+        if (pets.Count == 0)
         {
             Console.WriteLine("No pets registered to test polymorphism.");
             return;
         }
 
-        foreach (var pet in listPets)
+        foreach (var pet in pets)
         {
             Console.Write($"{pet.Name} ({pet.Species}): ");
             pet.MakeSound();

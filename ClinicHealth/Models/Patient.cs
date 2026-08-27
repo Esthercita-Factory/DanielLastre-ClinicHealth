@@ -2,7 +2,7 @@
 
 namespace ClinicHealth.Models;
 
-public class Patient : IRegistrable, INotificable
+public class Patient : IRegistrable, INotificable 
 {
     private Guid _id;
     private string _name;

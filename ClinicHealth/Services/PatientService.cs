@@ -1,15 +1,20 @@
 using ClinicHealth.Exceptions;
 using ClinicHealth.Interfaces;
 using ClinicHealth.Models;
+using ClinicHealth.Repositories;
 
 namespace ClinicHealth.Services;
 
 public class PatientService: IPatientService
 {
-    private LoggerService _loggerService;
+    private readonly IPatientRepository _patientRepository;
+    private readonly IPetRepository _petRepository;
+    private readonly LoggerService _loggerService;
 
-    public PatientService(LoggerService loggerService)
+    public PatientService(IPatientRepository patientRepository, IPetRepository petRepository, LoggerService loggerService)
     {
+        _patientRepository = patientRepository;
+        _petRepository = petRepository;
         _loggerService = loggerService;
     }
 
@@ -23,81 +28,52 @@ public class PatientService: IPatientService
         Console.WriteLine($"Result: {result}");
     }
 
-    public void DebugVariableInspection(List<Patient> listPatients)
+    public void DebugVariableInspection()
     {
-        int patientCount = listPatients.Count;
+        var patients = _patientRepository.GetAll();
+        int patientCount = patients.Count;
         string firstPatientName = "";
         
         if (patientCount > 0)
         {
-            firstPatientName = listPatients[0].Name;
+            firstPatientName = patients[0].Name;
         }
         
         Console.WriteLine($"Total patients: {patientCount}");
         Console.WriteLine($"First patient: {firstPatientName}");
     }
 
-    public void RegisterPatient(List<Patient> listPatients)
+    public void Register(string name, byte age, string address, string phone)
     {
-        Console.Write("Enter patient name: ");
-        string? name = Console.ReadLine();
-
-        while (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(name))
         {
-            Console.WriteLine("Name cannot be empty.");
-            Console.Write("Enter patient name: ");
-            name = Console.ReadLine();
+            throw new ArgumentException("Name cannot be empty.");
         }
 
-        byte age = 0;
-        bool validAge = false;
-        while (!validAge)
-        {
-            Console.Write("Enter patient age: ");
-            string? input = Console.ReadLine();
-
-            try
-            {
-                age = byte.Parse(input ?? "");
-                validAge = true;
-            }
-            catch (FormatException e)
-            {
-                Console.WriteLine($"Error: Please enter a valid number.{e.Message}");
-            }
-            catch (OverflowException e)
-            {
-                Console.WriteLine($"Error: Age must be between 0 and 255.{e.Message}");
-            }
-        }
-
-        Console.Write("Enter patient phone: ");
-        string? phone = Console.ReadLine();
-
-        var patient = new Patient(name!, age, phone);
-
-        listPatients.Add(patient);
+        var patient = new Patient(name, age, address, phone);
+        _patientRepository.Register(patient);
         
         patient.Register();
         patient.EnviarNotificacion();
     }
 
-    public void ListPatient(List<Patient> listPatients)
+    public void List()
     {
-        foreach (var patient in listPatients)
+        var patients = _patientRepository.GetAll();
+        foreach (var patient in patients)
         {
             Console.WriteLine($"Id: {patient.Id}, Name: {patient.Name}, Age: {patient.Age}");
         }
-        
     }
 
-    public void SearchPatientByName(List<Patient> listPatients, string name)
+    public void SearchByName(string name)
     {
+        var patients = _patientRepository.GetAll();
         bool found = false;
         
-        foreach (var patient in listPatients)
+        foreach (var patient in patients)
         {
-            if (patient.Name == name.ToLower())
+            if (patient.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine($"Id: {patient.Id}, Name: {patient.Name}, Age: {patient.Age}");
                 found = true;
@@ -110,116 +86,54 @@ public class PatientService: IPatientService
         }
     }
 
-    public void DeletePatient(List<Patient> listPatients, Dictionary<Guid, Patient> patientDictionary, Guid patientId)
+    public void Delete(Guid id)
     {
         try
         {
-            Patient? patientToDelete = null;
-            
-            foreach (var patient in listPatients)
+            // First, remove all pets associated with this patient
+            var pets = _petRepository.FilterByOwner(id);
+            foreach (var pet in pets)
             {
-                if (patient.Id == patientId)
-                {
-                    patientToDelete = patient;
-                    break;
-                }
+                _petRepository.Delete(pet.Id);
             }
-            
-            if (patientToDelete != null)
-            {
-                listPatients.Remove(patientToDelete);
-                patientDictionary.Remove(patientId);
-                Console.WriteLine("Patient deleted successfully.");
-            }
-            else
-            {
-                throw new PatientNotFoundException(patientId);
-            }
-        }
-        catch (PatientNotFoundException ex)
-        {
-            _loggerService.LogError(ex, "DeletePatient");
-            Console.WriteLine(ex.Message);
+
+            // Then remove the patient
+            _patientRepository.Delete(id);
+            Console.WriteLine("Patient deleted successfully.");
         }
         catch (Exception e)
         {
-            _loggerService.LogError(e, "DeletePatient");
+            _loggerService.LogError(e, "Delete");
             Console.WriteLine($"Error deleting patient: {e.Message}");
         }
     }
 
-    public void UpdatePatient(List<Patient> listPatients, Dictionary<Guid, Patient> patientDictionary, Guid patientId)
+    public void Update(Guid id, string name, byte age, string address, string phone)
     {
         try
         {
-            Patient? patientToUpdate = null;
-
-            foreach (var patient in listPatients)
+            var patient = _patientRepository.GetById(id);
+            if (patient == null)
             {
-                if (patient.Id == patientId)
-                {
-                    patientToUpdate = patient;
-                    break;
-                }
+                throw new PatientNotFoundException(id);
             }
 
-            if (patientToUpdate != null)
-            {
-                Console.Write("Enter new patient name: ");
-                string? name = Console.ReadLine();
+            patient.Name = name;
+            patient.Age = age;
+            patient.Address = address;
+            patient.Phone = phone;
 
-                while (string.IsNullOrWhiteSpace(name))
-                {
-                    Console.WriteLine("Name cannot be empty.");
-                    Console.Write("Enter new patient name: ");
-                    name = Console.ReadLine();
-                }
-
-                byte age = 0;
-                bool validAge = false;
-                while (!validAge)
-                {
-                    Console.Write("Enter new patient age: ");
-                    string? input = Console.ReadLine();
-
-                    try
-                    {
-                        age = byte.Parse(input ?? "");
-                        validAge = true;
-                    }
-                    catch (FormatException e)
-                    {
-                        Console.WriteLine($"Error: Please enter a valid number.{e.Message}");
-                    }
-                    catch (OverflowException e)
-                    {
-                        Console.WriteLine($"Error: Age must be between 0 and 255.{e.Message}");
-                    }
-                }
-
-                Console.Write("Enter new patient phone: ");
-                string? phone = Console.ReadLine();
-
-                patientToUpdate.Name = name!.Trim().ToLower();
-                patientToUpdate.Age = age;
-                patientToUpdate.Phone = phone?.Trim() ?? "";
-
-                patientDictionary[patientId] = patientToUpdate;
-                Console.WriteLine("Patient updated successfully.");
-            }
-            else
-            {
-                throw new PatientNotFoundException(patientId);
-            }
+            _patientRepository.Update(patient);
+            Console.WriteLine("Patient updated successfully.");
         }
         catch (PatientNotFoundException ex)
         {
-            _loggerService.LogError(ex, "UpdatePatient");
+            _loggerService.LogError(ex, "Update");
             Console.WriteLine(ex.Message);
         }
         catch (Exception e)
         {
-            _loggerService.LogError(e, "UpdatePatient");
+            _loggerService.LogError(e, "Update");
             Console.WriteLine($"Error updating patient: {e.Message}");
         }
     }

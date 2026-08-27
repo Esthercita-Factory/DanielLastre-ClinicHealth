@@ -4,8 +4,10 @@ namespace ClinicHealth.Interfaces;
 
 public interface IPetService
 {
-    void RegisterPet(List<Pet> listPets, Dictionary<Guid, Patient> patientDictionary, Guid patientId);
-    void DeletePet(List<Pet> listPets, Dictionary<Guid, Patient> patientDictionary, Guid petId);
-    void UpdatePet(List<Pet> listPets, Dictionary<Guid, Patient> patientDictionary, Guid petId);
-    void TestPolymorphism(List<Pet> listPets);
+    void Register(Guid ownerId, string name, byte age, PetType type, string symptom, Race race);
+    void Update(Guid id, string name, byte age, PetType type, string symptom, Race race);
+    void Delete(Guid id);
+    void List();
+    void ListByOwner(Guid ownerId);
+    void TestPolymorphism();
 }
