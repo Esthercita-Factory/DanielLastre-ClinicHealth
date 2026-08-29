@@ -13,6 +13,7 @@ exception handling, debugging, and logging.
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
 - [Project Structure](#project-structure)
+- [Folder Diagram](#folder-diagram)
 - [Domain Model](#domain-model)
 - [Interfaces and Abstraction](#interfaces-and-abstraction)
 - [Application Flow](#application-flow)
@@ -212,6 +213,53 @@ DanielLastre-ClinicHealth/
 └── ClinicHealth.Tests/
     ├── ClinicHealth.Tests.csproj
     └── UnitTest1.cs
+```
+
+## Folder Diagram
+
+```mermaid
+graph TD
+    A[ClinicHealth] --> B[Data]
+    A --> C[Exceptions]
+    A --> D[Interfaces]
+    A --> E[Models]
+    A --> F[Repositories]
+    A --> G[Services]
+    A --> H[UI]
+    A --> I[Program.cs]
+
+    B --> B1[AlmacenEnMemoria.cs]
+    B --> B2[DatosDeEjemplo.cs]
+
+    C --> C1[PatientNotFoundException.cs]
+    C --> C2[PetNotFoundException.cs]
+
+    D --> D1[IPatientService.cs]
+    D --> D2[IPetService.cs]
+    D --> D3[ILinqService.cs]
+    D --> D4[IRegistrable.cs]
+    D --> D5[INotificable.cs]
+    D --> D6[IAtendible.cs]
+
+    E --> E1[Animal.cs]
+    E --> E2[Patient.cs]
+    E --> E3[Pet.cs]
+    E --> E4[VeterinaryService.cs]
+    E --> E5[GeneralConsultation.cs]
+    E --> E6[Vaccination.cs]
+
+    F --> F1[ClinicRepository.cs]
+    F --> F2[IPatientRepository.cs]
+    F --> F3[IPetRepository.cs]
+
+    G --> G1[PatientService.cs]
+    G --> G2[PetService.cs]
+    G --> G3[LinqService.cs]
+    G --> G4[LoggerService.cs]
+
+    H --> H1[ManagerClinic.cs]
+    H --> H2[ManagerUser.cs]
+    H --> H3[EntradaDeConsola.cs]
 ```
 
 ## Domain Model
